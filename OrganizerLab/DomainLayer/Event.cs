@@ -83,7 +83,7 @@ namespace Organizer
 				}
 			}
 			else
-				throw new Exception("To late to cancel event. Can only cancel at least 3h before beginning");
+				throw new Exception("To late to cancel event. Can only cancel at least 3h before start");
 		}
 
 		public void AcceptInvitation(int contactId)
@@ -91,7 +91,10 @@ namespace Organizer
 			Invitation invitation = FindInvitation(contactId);
 			if (invitation != null)
 			{
-				invitation.Accept();
+				if (Started > DateTime.Now)
+					invitation.Accept();
+				else
+					throw new Exception("Cannot reject invitation to an event that already started.");
 			}
 		}
 
@@ -100,7 +103,10 @@ namespace Organizer
 			Invitation invitation = FindInvitation(contactId);
 			if (invitation != null)
 			{
-				invitation.Reject();
+				if (Started > DateTime.Now)
+					invitation.Reject();
+				else
+					throw new Exception("Cannot reject invitation to an event that already started.");
 			}
 		}
 
