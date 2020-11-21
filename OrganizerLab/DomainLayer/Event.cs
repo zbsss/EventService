@@ -75,7 +75,10 @@ namespace Organizer
 			Invitation invitation = FindInvitation(contactId);
 			if (invitation != null)
 			{
-				invitation.Accept();
+				if (Started > DateTime.Now)
+					invitation.Accept();
+				else
+					throw new Exception("Cannot reject invitation to an event that already started.");
 			}
 		}
 
@@ -84,7 +87,10 @@ namespace Organizer
 			Invitation invitation = FindInvitation(contactId);
 			if (invitation != null)
 			{
-				invitation.Reject();
+				if (Started > DateTime.Now)
+					invitation.Reject();
+				else
+					throw new Exception("Cannot reject invitation to an event that already started.");
 			}
 		}
 
