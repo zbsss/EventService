@@ -8,13 +8,9 @@ namespace Organizer
 
 		public int CreateEvent(string description, string place, DateTime start, DateTime stop)
 		{
-			if(start > DateTime.Now && stop > DateTime.Now && stop > start) {
-				Event e = new Event(description, place, start, stop);
-				EventRepository.AddEvent(e);
-				return e.Id;
-			}
-
-			throw new ArgumentException("Wrong value of start/stop");
+			Event e = new Event(description, place, start, stop);
+			EventRepository.AddEvent(e);
+			return e.Id;
 		}
 
 		public void AddSMSAlarm(int eventId,DateTime dateTime,string phoneNumber,string smsContent)
@@ -38,21 +34,13 @@ namespace Organizer
 		public void CancelEvent(int eventId)
 		{
 			var e = EventRepository.Get(eventId);
-			if(e.Started > DateTime.Now.AddHours(3))
-				e.CancelEvent();
-			else
-				throw new Exception("To late to cancel event. Can only cancel at least 3h before beginning");
+			e.CancelEvent();
 		}
 
 		public void ChangeEventDateTime(int eventId, DateTime start, DateTime end)
 		{
 			var e = EventRepository.Get(eventId);
-
-			DateTime now3 = DateTime.Now.AddHours(3);
-			if (start > now3 && end > now3 && end > start)
-				e.ChangeEventDateTime(start, end);
-			else
-				throw new ArgumentException("Wrong value of start/end");
+			e.ChangeEventDateTime(start, end);
 		}
 	}
 

@@ -28,11 +28,16 @@ namespace Organizer
 		// ctor
 		public Event(string description, string place, DateTime started, DateTime completed)
 		{
+			if (started > DateTime.Now && completed > DateTime.Now && completed > started)
+			{
 				Description = description;
 				Place = place;
 				Started = started;
 				Completed = completed;
 				status = EventStatus.CREATED;
+			}
+			else
+				throw new ArgumentException("Wrong value of started/completed");
 		}
 
 		
@@ -44,14 +49,20 @@ namespace Organizer
 
 		internal void ChangeEventDateTime(DateTime start, DateTime end)
 		{
-			Started = start;
-			Completed = end;
-			alarm = null; // garbage collector will take care of deletion
-
-			foreach (Invitation invitation in invitations)
+			DateTime now3 = DateTime.Now.AddHours(3);
+			if (start > now3 && end > now3 && end > start)
 			{
-				invitation.NotifyParticipant(Description, Place, Started, Completed, Status);
+				Started = start;
+				Completed = end;
+				alarm = null; // garbage collector will take care of deletion
+
+				foreach (Invitation invitation in invitations)
+				{
+					invitation.NotifyParticipant(Description, Place, Started, Completed, Status);
+				}
 			}
+			else
+				throw new ArgumentException("Wrong value of start/end");
 		}
 
 		public void AddParticipant(Contact contact) 
@@ -63,11 +74,16 @@ namespace Organizer
 
 		public void CancelEvent()
 		{
-			status = EventStatus.CANCELED;
-			foreach(Invitation invitation in invitations)
+			if (Started > DateTime.Now.AddHours(3))
 			{
-				invitation.NotifyParticipant(Description, Place, Started, Completed, Status);
+				status = EventStatus.CANCELED;
+				foreach (Invitation invitation in invitations)
+				{
+					invitation.NotifyParticipant(Description, Place, Started, Completed, Status);
+				}
 			}
+			else
+				throw new Exception("To late to cancel event. Can only cancel at least 3h before beginning");
 		}
 
 		public void AcceptInvitation(int contactId)
